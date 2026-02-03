@@ -1,3 +1,44 @@
+Yo:
+Perfecto ahora si pasemos a confeccionar las pruebas de unidad usando JUnit.  esto es lo que se tiene actualmente : package es.upm.grise.profundizacion.file;
+
+import org.junit.jupiter.api.Test;
+
+public class FileTest {
+	
+	@Test
+    public void smokeTest() {}
+
+}  .Hagamos las pruebas necesarias y de forma perfecta porfavor, y guiame el proceso completo para ver si todo funciona y si esta listo para dar por finalizado el trabajo 
+Thought for 30s
+
+ChatGPT:
+
+Listo. Vamos a dejar tu FileTest con un set de pruebas JUnit 5 completo, verificando:
+
+Constructor: content no null y vacío
+
+addProperty:
+
+agrega (append) correctamente
+
+lanza InvalidContentException si newcontent == null
+
+lanza WrongFileTypeException si type == IMAGE
+
+getCRC32:
+
+devuelve 0 si content está vacío
+
+cuando hay contenido: retorna el CRC que entrega FileUtils
+
+y además verificamos que el byte[] generado sea el correcto (MSB, LSB por cada char)
+
+Como File crea internamente su FileUtils (privado y final), en tests usamos reflection para inyectar un FileUtils “grabador” que captura el byte[] recibido. Esto es normal en prácticas cuando el diseño no expone inyección.
+
+1) Reemplaza tu FileTest.java por este (completo)
+
+📍 Ruta: src/test/java/es/upm/grise/profundizacion/file/FileTest.java
+
 package es.upm.grise.profundizacion.file;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -126,3 +167,33 @@ public class FileTest {
         assertEquals(4, utils.lastBytes.length, "byte[] length must be 2 * number_of_chars");
     }
 }
+
+2) Cómo ejecutar y verificar que TODO está bien
+A) En tu IDE (IntelliJ / Eclipse)
+
+Abre FileTest.java
+
+Click derecho → Run 'FileTest'
+
+Debe salir todo verde ✅ (7 tests)
+
+B) En consola (si usas Maven)
+
+En la raíz del proyecto:
+
+mvn test
+
+C) Si usas Gradle
+./gradlew test
+
+3) ¿Cuándo puedo decir “trabajo finalizado”?
+
+Cuando:
+
+✅ Todos los tests pasan (verde)
+✅ No hay warnings raros de compilación
+✅ Tu src/main no fue “hackeado” para testear (solo tests usan reflection)
+
+Si los tests pasan, puedes entregar con confianza.
+
+Si al correr te falla solo el test de inyección por reflection, dime el error exacto (stacktrace) y lo ajusto según tu versión de Java / configuración del runner.
